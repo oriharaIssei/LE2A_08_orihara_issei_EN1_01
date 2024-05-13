@@ -53,12 +53,35 @@ public class GameManager : MonoBehaviour {
         field[from.y, from.x] = null;
         return true;
     }
+
+    bool IsCleared() {
+        List<Vector2Int> goals = new();
+
+        for (int y = 0; y < map.GetLength(0); ++y) {
+            for (int x = 0; x < map.GetLength(1); ++x) {
+                if (map[y, x] == 3) {
+                    goals.Add(new Vector2Int(x, y));
+                }
+            }
+        }
+
+        for (int i = 0; i < goals.Count; ++i) {
+            GameObject f = field[goals[i].y, goals[i].x];
+            if (f == null || f.tag != "Box") {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+
     // Start is called before the first frame update
     void Start() {
         map = new int[,] {
             { 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0 },
             { 0, 0, 0, 2, 0, 0, 0, 0, 1, 0, 0 },
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
+            { 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
         };
         field = new GameObject[map.GetLength(0), map.GetLength(1)];
         for (int y = 0; y < map.GetLength(0); y++) {
@@ -81,6 +104,10 @@ public class GameManager : MonoBehaviour {
         if (playerMoveVal.x != 0 || playerMoveVal.y != 0) {
             Vector2Int playerIndex = GetObjectIndex("Player");
             MoveNumber("Player", playerIndex, playerIndex + playerMoveVal);
+        }
+
+        if (IsCleared()) {
+            Debug.Log("Clear");
         }
     }
 }
